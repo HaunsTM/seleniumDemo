@@ -11,62 +11,95 @@
 </head>
 <body>
 
-    <!-- Always shows a header, even in smaller screens. -->
+<!-- Always shows a header, even in smaller screens. -->
     <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
         <header class="mdl-layout__header">
             <div class="mdl-layout__header-row">
                 <!-- Title -->
-                <span class="mdl-layout-title">Selenium test</span>
+                <span class="mdl-layout-title">A Selenium test page</span>
+                <!-- Add spacer, to align navigation to the right -->
                 <div class="mdl-layout-spacer"></div>
+                <!-- Navigation -->
                 <nav class="mdl-navigation">
+                    <a class="mdl-navigation__link" href="https://en.wikipedia.org/wiki/Multiplication">Multiplication</a>
                 </nav>
             </div>
         </header>
+        <div class="mdl-layout__drawer">
+            <span class="mdl-layout-title">A Selenium test page</span>
+            <nav class="mdl-navigation">
+                <a class="mdl-navigation__link" href="https://en.wikipedia.org/wiki/Multiplication">Multiplication</a>
+            </nav>
+        </div>
         <main class="mdl-layout__content">
             <div class="page-content">
-                <h1>Hello world!</h1>
-                <p>Please enter your name in the text field below. If you try other characters than English you will get an error message! When you're done, hit the button!</p>
-                <!-- Textfield -->
+                <!-- Your content goes here -->
+                <h1>Instructions</h1>
+                <p>Please enter a number in the field below. When you're done, hit "MULTIPLICATE"-button to get the result when multiplied with 5.</p>
+                <!-- Numeric Textfield -->
                 <form action="#">
                     <div class="mdl-textfield mdl-js-textfield">
-                        <input class="mdl-textfield__input" type="text" pattern="[abcdefghijklmnopqrstuvxyzåäöABCDEFGHIJKLMNOPQRSTUVXYZÅÄÖ]+" id="txtName">
-                        <label class="mdl-textfield__label" for="txtName">Your name please...</label>
-                        <span class="mdl-textfield__error">Invalid characters!</span>
+                        <input class="mdl-textfield__input" type="text" pattern="-?[0-9]*(\.[0-9]+)?" id="txtNumber" oninput="setButtonEnability()">
+                        <label class="mdl-textfield__label" for="txtNumber">Number...</label>
+                        <span class="mdl-textfield__error">Input is not a number!</span>
                     </div>
                     <br />
-                    <!-- Raised button with ripple -->
-                    <button id="btnShowHelloMessage" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" onclick="showHelloCard()">
-                        Hit me!
-                    </button>
+                    <button id="btnMultiplicate" type="button" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect show-modal" disabled>Multiplicate</button>
                 </form>
 
-                <div id="outputCard" class="mdl-card hidden">
-                    <div class="mdl-card__title">
-                        <h2 class="mdl-card__title-text">Hi!</h2>
+
+                <dialog class="mdl-dialog">
+                    <div class="mdl-dialog__content">
+                        <div id="lblResult">
+                        </div>
                     </div>
-                    <div class="mdl-card__supporting-text">
-                        <span id="helloOutput"></span>
+                    <div class="mdl-dialog__actions mdl-dialog__actions--full-width">
+                        <button type="button" class="mdl-button close">Agree</button>
                     </div>
-                </div>
+                </dialog>
+
             </div>
         </main>
     </div>
     <script>
 
-        function showHelloCard() {
-            //code to be executed
-            let txtName = document.getElementById("txtName");
-            let outputCard = document.getElementById("outputCard");
-            let helloOutput = document.getElementById("helloOutput");
+        let dialog = document.querySelector('dialog');
+        let showModalButton = document.querySelector('.show-modal');
 
-            let helloMessage = "Welcome to Selenium demo " + txtName.value + "!";
+        let txtNumber = document.getElementById('txtNumber');
+        let btnMultiplicate = document.getElementById('btnMultiplicate');
+        let lblResult = document.getElementById('lblResult');
 
+        function setButtonEnability(forceDisabled) {
 
-            helloOutput.innerHTML = helloMessage;
+            let isValidInput = txtNumber.validity.valid;
+            let enabled = forceDisabled ? forceDisabled : isValidInput;
 
+            if (enabled) {
+                btnMultiplicate.removeAttribute("disabled");
 
-            outputCard.classList.remove("hidden");
+                lblResult.innerHTML = "<h3>Congratulations!</h3><p>The multiplication, <b>" + txtNumber.value + " · 5</b>, resulted in " +
+                    txtNumber.value * 5 + "</p>";
+
+            } else {
+                btnMultiplicate.setAttribute("disabled", "true");
+            }
         }
+
+
+        if (!dialog.showModal) {
+            dialogPolyfill.registerDialog(dialog);
+        }
+
+        showModalButton.addEventListener('click', function () {
+            dialog.showModal();
+        });
+
+        dialog.querySelector('.close').addEventListener('click', function () {
+            txtNumber.value = "";
+            setButtonEnability();
+            dialog.close();
+        });
     </script>
 </body>
 </html>

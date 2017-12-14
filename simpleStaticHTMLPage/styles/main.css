@@ -1,11 +1,3 @@
-﻿body {
-    padding: 3rem 2rem;
-}
-
-.block {
-    display: block;
-}
-
-.hidden {
-    display: none;
+﻿.page-content {
+    padding: 0rem 2rem;
 }
