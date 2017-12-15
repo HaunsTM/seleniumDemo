@@ -68,15 +68,31 @@ namespace simpleStaticHTMLPage.Tests
             var actualValidInput = isValidInput;
             var expectedValidInput = false;
 
-            Assert.AreEqual(actualValidInput, expectedValidInput, "The input text is not supposed to be valid");
+            Assert.AreEqual(expectedValidInput, actualValidInput, "The input text is not supposed to be valid");
         }
 
         [Test()]
         public void T__Cant_Click_On_Multiplicate_Button_With_Invalid_Input()
         {
-            //are we allowed to calculate, i.e. hit the MULTIPLY-button, when we have wrong input? 
+            //are we allowed to perform calculation, i.e. hit the MULTIPLY-button, when we have wrong input? 
+            bool isDisabled = false;
 
+            //preparations: add some invalid input to input field
+            var input = _driver.FindElement(By.XPath("html/body/div/div/main/div/form/div/input[@id ='txtNumber']"));
+            const string SOME_ARBITRARY_TEXT = "consolit";
 
+            //type something in the text box
+            input.Clear(); // clear input field
+            input.SendKeys(SOME_ARBITRARY_TEXT);   // add some text to input field
+
+            //is the button disabled (not clickable)?
+            var btnMultiplicate = _driver.FindElement(By.Id("btnMultiplicate"));
+            bool.TryParse(btnMultiplicate.GetAttribute("disabled"), out isDisabled);
+
+            var actualDisabledState = isDisabled;
+            var expectedDisabledState = true;
+
+            Assert.AreEqual(expectedDisabledState, actualDisabledState, "The should be disable (not clickable)");
         }
 
         [Test()]
