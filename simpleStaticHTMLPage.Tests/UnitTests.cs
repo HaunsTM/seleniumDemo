@@ -9,12 +9,16 @@ namespace simpleStaticHTMLPage.Tests
     public class UnitTests
     {
         IWebDriver _driver = null;
+        IJavaScriptExecutor _javaScriptExecutor = null;
+
         private const string SIMPLE_STATIC_LOCAL_HTML_PAGE = "http://localhost:59714/index.html";
 
         [SetUp]
         public void Initialize()
         {
             _driver = new ChromeDriver();
+            _javaScriptExecutor = (IJavaScriptExecutor)_driver;
+
             _driver.Navigate().GoToUrl(SIMPLE_STATIC_LOCAL_HTML_PAGE);
         }
 
@@ -25,7 +29,7 @@ namespace simpleStaticHTMLPage.Tests
             var actualTitle = _driver.Title;
             var expectedTitle = "Selenium demo";
 
-            Assert.AreEqual(expectedTitle, actualTitle);
+            Assert.AreEqual(expectedTitle, actualTitle, "The index page title is expected to be 'Selenium demo' (the <title> element should contain 'Selenium demo')");
         }
 
         [Test()]
@@ -38,17 +42,33 @@ namespace simpleStaticHTMLPage.Tests
             var actualHeaderText = headerText;
             var expectedHeaderText = "Instructions";
 
-            Assert.AreEqual(expectedHeaderText, actualHeaderText);
+            Assert.AreEqual(expectedHeaderText, actualHeaderText, "The header text is expected to be 'Instructions'");
         }
 
         [Test()]
         public void T__Only_Numbers_Are_Valid_Input()
         {
-            //is it allowed to write other input than numbers in input
+            //is it allowed to write other input than numbers in input?
 
-            //hint: google search on "selenium C# sendKeys"
+            var input = _driver.FindElement(By.XPath("html/body/div/div/main/div/form/div/input[@id ='txtNumber']"));
+            const string SOME_ARBITRARY_TEXT = "consolit";
 
-            //this one is tricky... :-)
+            //type something in the text box
+            input.Clear(); // clear input field
+            input.SendKeys(SOME_ARBITRARY_TEXT);   // add some text to input field
+
+            //as the current html/javascript implementation will set the html input field in an invalid state, if we have wrong input,
+            //we can examine the state to see if our error prone text input is valid
+
+            var isValidInput = (bool)_javaScriptExecutor.ExecuteScript(
+                "let txtNumber = document.getElementById('txtNumber');" +
+                "let isValidInput = txtNumber.validity.valid;" +
+                "return isValidInput;");
+
+            var actualValidInput = isValidInput;
+            var expectedValidInput = false;
+
+            Assert.AreEqual(actualValidInput, expectedValidInput, "The input text is not supposed to be valid");
         }
 
         [Test()]
